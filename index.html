@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="manifest" href="/manifest.json" />
+    <title>Simple Page</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hello, World!</h1>
+
+    <button id="clickMe">Click me</button>
+
+    <script>
+        document.getElementById('clickMe').addEventListener('click', function () {
+            alert('Button clicked!');
+        });
+        const PATH = 'service-worker.js';
+        let isServiceWorkersSupport = ('serviceWorker' in navigator);
+        if (isServiceWorkersSupport) {
+            console.log('Will service worker register?');
+            navigator.serviceWorker.register(PATH).then(function () {
+                console.log("Yes it did.");
+            }).catch(function (err) {
+                console.log("No it didn't. This happened: ", err)
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -20,8 +20,10 @@
     <h1>Hello, World!</h1>
 
     <button id="clickMe">Click me</button>
+    <button id="statusCheck">Click to check the connection status</button>
 
     <script>
+        alert((window.navigator.onLine ? 'on' : 'off') + 'line');
         document.getElementById('clickMe').addEventListener('click', function () {
             alert('Button clicked!');
         });
@@ -35,6 +37,11 @@
                 console.log("No it didn't. This happened: ", err)
             });
         }
+
+        window.addEventListener('online', () => alert('Became online'));
+        window.addEventListener('offline', () => alert('Became offline'));
+
+        document.getElementById('statusCheck').addEventListener('click', () => alert((window.navigator.onLine ? 'on' : 'off') + 'line'));
     </script>
 </body>
 

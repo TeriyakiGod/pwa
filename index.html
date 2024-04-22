@@ -8,6 +8,7 @@
         body {
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
+            text-align: center;
         }
 
         h1 {
@@ -19,12 +20,72 @@
 <body>
     <h1>Hello, World!</h1>
 
-    <button id="clickMe">Click me</button>
+    <button id="start">Start recognition</button>
+    <button id="stop">Stop recognition</button>
+    <div>
+        <p class="output"><em>…diagnostic messages</em></p>
+    </div>
 
     <script>
-        document.getElementById('clickMe').addEventListener('click', function () {
-            alert('Button clicked!');
+        const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechGrammarList =
+            window.SpeechGrammarList || window.webkitSpeechGrammarList;
+        const SpeechRecognitionEvent =
+            window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+        const colors = [
+            "aqua",
+            "azure",
+            "beige",
+            "bisque",
+            "black",
+            "blue",
+            "brown",
+            "chocolate",
+            "coral" /* … */,
+        ];
+        const grammar = `#JSGF V1.0; grammar colors; public <color> = ${colors.join(
+            " | ",
+        )};`;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        const diagnostic = document.querySelector(".output");
+        const bg = document.querySelector("html");
+        const hints = document.querySelector(".hints");
+
+        let colorHTML = "";
+        colors.forEach((color, i) => {
+            console.log(color, i);
+            colorHTML += `<span style="background-color:${color};"> ${color} </span>`;
         });
+
+        document.getElementById('start').addEventListener('click', function () {
+            diagnostic.textContent="Started";
+            recognition.start();
+        });
+        document.getElementById('stop').addEventListener('click', function () {
+            diagnostic.textContent="Stopped";
+            recognition.stop();
+        });
+        recognition.onresult = (event) => {
+            const color = event.results[0][0].transcript;
+            diagnostic.textContent = `Result received: ${color}.`;
+            bg.style.backgroundColor = color;
+            console.log(`Confidence: ${event.results[0][0].confidence}`);
+        };
+        recognition.onspeechend = () => {
+            recognition.stop();
+        };
+        recognition.onnomatch = (event) => {
+            diagnostic.textContent = "I didn't recognize that color.";
+        };
+        recognition.onerror = (event) => {
+            diagnostic.textContent = `Error occurred in recognition: ${event.error}`;
+        };
+
         const PATH = 'service-worker.js';
         let isServiceWorkersSupport = ('serviceWorker' in navigator);
         if (isServiceWorkersSupport) {
